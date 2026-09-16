@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#07162b"/>
+  <title>SolarIA Designer FV</title>
+  <link rel="manifest" href="/manifest.webmanifest"/>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><div class="logo-mark">S</div><div><h1>SolarIA Designer FV</h1><small>Dimensionamento inteligente • On-grid • Off-grid • Híbrido</small></div></div>
+    <div class="top-actions no-print"><button class="btn btn-soft" id="saveBtn">Salvar projeto</button><button class="btn btn-soft" id="exportSvgBtn">Exportar unifilar SVG</button><button class="btn btn-primary" id="printBtn">Gerar PDF</button></div>
+  </div>
+</header>
+<main class="app">
+  <div class="grid">
+    <aside class="sidebar">
+      <section class="card">
+        <h2>Projeto fotovoltaico</h2>
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-mode="ongrid">On-grid</button>
+          <button class="tab" data-mode="offgrid">Off-grid</button>
+          <button class="tab" data-mode="hybrid">Híbrido</button>
+        </div>
+        <div class="field"><label>Nome do projeto</label><input id="projectName" value="Projeto Solar FV"/></div>
+        <div class="section-title">1. Localização e irradiação</div>
+        <div class="field"><label>Endereço, cidade ou CEP</label><input id="address" placeholder="Ex.: Rio Branco, Acre"/></div>
+        <div class="stack"><button class="btn btn-dark" id="searchAddressBtn">Buscar endereço</button><button class="btn btn-soft" id="geoBtn">Usar minha localização</button></div>
+        <div class="row" style="margin-top:10px"><div class="field"><label>Latitude</label><input id="lat" type="number" step="0.000001" value="-9.97499"/></div><div class="field"><label>Longitude</label><input id="lon" type="number" step="0.000001" value="-67.82430"/></div></div>
+        <button class="btn btn-primary" id="solarBtn" style="width:100%">Buscar irradiação PVGIS</button>
+        <div id="locationStatus" class="status">Defina o endereço ou as coordenadas.</div>
+
+        <div class="section-title">2. Consumo e critérios</div>
+        <div class="row"><div class="field"><label>Consumo mensal (kWh)</label><input id="monthlyKwh" type="number" min="1" value="600"/></div><div class="field"><label>Demanda/pico (kW)</label><input id="peakKw" type="number" min="0.1" step="0.1" value="5"/></div></div>
+        <div class="row"><div class="field"><label>Performance Ratio - PR</label><input id="pr" type="number" min="0.5" max="1" step="0.01" value="0.80"/></div><div class="field"><label>Margem de projeto (%)</label><input id="margin" type="number" min="0" max="100" value="10"/></div></div>
+        <div class="field"><label>Critério solar</label><select id="solarCriterion"><option value="average">HSP média anual</option><option value="worst">Pior mês</option><option value="manual">HSP manual</option></select></div>
+        <div class="field hide" id="manualHspWrap"><label>HSP manual (kWh/m².dia)</label><input id="manualHsp" type="number" min="0.1" step="0.01" value="4.5"/></div>
+
+        <div class="section-title">3. Módulo FV</div>
+        <div class="row"><div class="field"><label>Potência do módulo (Wp)</label><input id="moduleWp" type="number" value="580"/></div><div class="field"><label>Voc (V)</label><input id="moduleVoc" type="number" step="0.01" value="52.0"/></div></div>
+        <div class="row"><div class="field"><label>Vmp (V)</label><input id="moduleVmp" type="number" step="0.01" value="43.5"/></div><div class="field"><label>Isc (A)</label><input id="moduleIsc" type="number" step="0.01" value="14.0"/></div></div>
+        <div class="row"><div class="field"><label>Imp (A)</label><input id="moduleImp" type="number" step="0.01" value="13.34"/></div><div class="field"><label>Coef. Voc (%/°C)</label><input id="vocCoeff" type="number" step="0.01" value="-0.25"/></div></div>
+
+        <div class="section-title">4. Inversor / MPPT</div>
+        <div class="row"><div class="field"><label>Vcc máx. inversor (V)</label><input id="invVmax" type="number" value="600"/></div><div class="field"><label>MPPT mín. (V)</label><input id="mpptMin" type="number" value="120"/></div></div>
+        <div class="row"><div class="field"><label>MPPT máx. (V)</label><input id="mpptMax" type="number" value="550"/></div><div class="field"><label>Corrente MPPT máx. (A)</label><input id="mpptCurrent" type="number" value="32"/></div></div>
+        <div class="row"><div class="field"><label>Temp. mínima (°C)</label><input id="tmin" type="number" value="10"/></div><div class="field"><label>Relação DC/AC alvo</label><input id="dcac" type="number" step="0.05" value="1.20"/></div></div>
+
+        <div id="batteryFields" class="hide">
+          <div class="section-title">5. Armazenamento</div>
+          <div class="row"><div class="field"><label>Autonomia (h)</label><input id="autonomyHours" type="number" min="1" value="12"/></div><div class="field"><label>Cargas essenciais (%)</label><input id="essentialPct" type="number" min="1" max="100" value="60"/></div></div>
+          <div class="row"><div class="field"><label>DoD utilizável</label><input id="dod" type="number" min="0.1" max="1" step="0.01" value="0.80"/></div><div class="field"><label>Eficiência bateria</label><input id="batteryEff" type="number" min="0.5" max="1" step="0.01" value="0.95"/></div></div>
+          <div class="row"><div class="field"><label>Tensão banco (V)</label><select id="bankVoltage"><option>24</option><option selected>48</option><option>96</option><option>192</option><option>384</option></select></div><div class="field"><label>Capacidade unitária bateria (kWh)</label><input id="batteryUnitKwh" type="number" step="0.1" value="5.12"/></div></div>
+        </div>
+
+        <button class="btn btn-primary" id="calcBtn" style="width:100%;margin-top:10px">Dimensionar sistema</button>
+      </section>
+    </aside>
+
+    <section>
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap"><div><h2 id="resultTitle">Resultado • On-grid</h2><div class="muted" id="resultSubtitle">Faça a consulta solar e clique em dimensionar.</div></div><span class="pill" id="sourcePill">PVGIS não consultado</span></div>
+        <div class="results-grid" style="margin-top:15px">
+          <div class="metric"><div class="k">Potência FV instalada</div><div class="v"><span id="rPv">—</span><span class="u">kWp</span></div></div>
+          <div class="metric"><div class="k">Quantidade de módulos</div><div class="v"><span id="rModules">—</span><span class="u">un.</span></div></div>
+          <div class="metric"><div class="k">Inversor sugerido</div><div class="v"><span id="rInv">—</span><span class="u">kW</span></div></div>
+          <div class="metric"><div class="k" id="batteryMetricLabel">Geração estimada</div><div class="v"><span id="rExtra">—</span><span class="u" id="rExtraUnit">kWh/mês</span></div></div>
+        </div>
+        <div class="main-grid">
+          <div>
+            <h3>Irradiação mensal</h3><svg id="chart" class="chart" viewBox="0 0 720 250" preserveAspectRatio="none"></svg>
+            <div style="overflow:auto"><table class="month-table"><thead><tr><th>Mês</th><th>Irradiação</th><th>HSP</th><th>Temp.</th></tr></thead><tbody id="monthBody"></tbody></table></div>
+          </div>
+          <div>
+            <h3>Análise inteligente</h3><div id="alerts" class="alerts"><div class="alert">Aguardando dimensionamento.</div></div>
+            <div class="section-title">Resumo elétrico</div>
+            <div id="electricalSummary" class="muted" style="font-size:13px;line-height:1.75">—</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:18px">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h2>Esquema unifilar editável</h2><div class="muted">Arraste os blocos. Os valores abaixo alteram o unifilar antes da exportação.</div></div><button class="btn btn-soft no-print" id="resetDiagramBtn">Reorganizar</button></div>
+        <div class="diagram-wrap" style="margin-top:14px"><svg id="diagram" class="diagram" viewBox="0 0 1000 420"></svg></div>
+        <div class="edit-panel no-print">
+          <div class="field"><label>Texto gerador FV</label><input id="labelPv" value="Gerador FV"/></div>
+          <div class="field"><label>Texto inversor</label><input id="labelInv" value="Inversor"/></div>
+          <div class="field"><label>Texto proteção</label><input id="labelProt" value="Proteções DC/AC"/></div>
+          <div class="field"><label>Disjuntor CA</label><input id="breakerAc" value="Dimensionar conforme corrente e cabo"/></div>
+          <div class="field"><label>DPS</label><input id="spdLabel" value="DPS CC + DPS CA"/></div>
+          <div class="field"><label>Cabo</label><input id="cableLabel" value="Verificar Iz, ΔV e curto-circuito"/></div>
+        </div>
+        <div class="footer-note">Ferramenta de pré-dimensionamento. O projeto executivo deve ser validado por profissional habilitado, considerando características reais dos equipamentos, temperatura, condutores, queda de tensão, curto-circuito, seletividade, aterramento, SPDA/DPS, requisitos de conexão da distribuidora e normas técnicas aplicáveis.</div>
+      </section>
+    </section>
+  </div>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

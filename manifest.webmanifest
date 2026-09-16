@@ -1,0 +1,9 @@
+{
+  "name": "SolarIA Designer FV",
+  "short_name": "SolarIA FV",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07162b",
+  "theme_color": "#f58220",
+  "description": "Dimensionamento inteligente de sistemas fotovoltaicos on-grid, off-grid e híbridos."
+}

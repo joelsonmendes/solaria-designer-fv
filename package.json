@@ -1,0 +1,8 @@
+{
+  "name": "solaria-designer-fv",
+  "version": "1.1.0",
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  }
+}

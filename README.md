@@ -23,9 +23,10 @@ Ferramenta web/PWA para pré-dimensionamento de sistemas fotovoltaicos **on-grid
 2. No Vercel, importe o repositório.
 3. Framework Preset: **Other**.
 4. Não é necessário Build Command.
-5. Faça o deploy.
+5. Node.js: **24.x** (também fixado em `package.json`).
+6. Faça o deploy.
 
-As rotas `/api/geocode.js` e `/api/solar.js` serão publicadas como funções serverless.
+As rotas `/api/geocode.js` e `/api/solar.js` serão publicadas como Vercel Functions Node.js. O `vercel.json` não declara `runtime`, pois esse campo é reservado a runtimes customizados; a versão do Node é definida por `engines.node` em `package.json`.
 
 ## Arquitetura de dados
 

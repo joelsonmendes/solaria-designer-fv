@@ -1,39 +1,62 @@
-# SolarIA Designer FV — V1
+# SolarIA Designer FV V2 Pro
 
-Ferramenta web/PWA para pré-dimensionamento de sistemas fotovoltaicos **on-grid, off-grid e híbridos**.
+Ferramenta web/PWA mobile-first para pré-dimensionamento de sistemas fotovoltaicos **on-grid, off-grid e híbridos**.
 
-## Recursos da V1
+## O que mudou na V2
 
-- Busca de endereço com geocodificação OpenStreetMap/Nominatim.
-- Uso da localização do dispositivo pelo navegador.
-- Consulta server-side ao PVGIS 5.3 (JRC/Comissão Europeia), evitando o bloqueio CORS do PVGIS no navegador.
-- HSP média anual, pior mês, tabela e gráfico mensal.
-- Dimensionamento preliminar de potência FV, quantidade de módulos e inversor.
-- Off-grid/híbrido: energia nominal do banco, Ah e quantidade de baterias modulares.
-- Checagem preliminar de janela MPPT, Voc corrigida por temperatura e paralelismo por corrente.
-- Unifilar SVG editável: valores atualizados automaticamente e blocos arrastáveis.
-- Exportação do unifilar em SVG.
-- Impressão/geração de PDF pelo navegador.
-- Salvamento local do projeto.
-- PWA básica.
+- fluxo guiado em 8 etapas;
+- endereço, coordenadas e GPS;
+- PVGIS 5.3 + NASA POWER;
+- 12 meses de consumo;
+- cenários 80/100/120% (ou equivalentes no off-grid);
+- motor de perdas e Performance Ratio;
+- pré-layout geométrico 2D;
+- auto-stringing por Voc/Vmp, temperatura, corrente e MPPT;
+- bateria por energia, potência, DoD e eficiência;
+- validação off-grid via PVGIS SHScalc;
+- cabos CC/CA por queda de tensão;
+- proteções preliminares, Icc e DPS;
+- CAPEX, economia, payback, VPL, TIR e LCOE;
+- PVGIS PVcalc para produção detalhada;
+- diagnóstico técnico automático;
+- BOM;
+- unifilar SVG editável e responsivo;
+- exportação/importação JSON;
+- impressão/PDF pelo navegador;
+- PWA e autosave local.
 
-## Deploy no Vercel
+Leia também `BENCHMARK_CONCORRENTES.md` e `ARQUITETURA_E_DESEMPENHO.md`.
 
-1. Envie esta pasta para um repositório GitHub.
-2. No Vercel, importe o repositório.
-3. Framework Preset: **Other**.
-4. Não é necessário Build Command.
-5. Node.js: **24.x** (também fixado em `package.json`).
-6. Faça o deploy.
+## Publicar no Vercel
 
-As rotas `/api/geocode.js` e `/api/solar.js` serão publicadas como Vercel Functions Node.js. O `vercel.json` não declara `runtime`, pois esse campo é reservado a runtimes customizados; a versão do Node é definida por `engines.node` em `package.json`.
+1. Envie todo o conteúdo desta pasta para a raiz do repositório GitHub.
+2. No Vercel, importe/conecte o repositório.
+3. Framework Preset: **Other** (ou autodetectado).
+4. Não defina Output Directory.
+5. Faça o deploy.
 
-## Arquitetura de dados
+O `vercel.json` não força um runtime customizado; as funções JavaScript em `/api` usam o runtime Node.js do projeto. O `package.json` fixa Node 24.x.
 
-- Endereço → `/api/geocode` → Nominatim → latitude/longitude.
-- Latitude/longitude → `/api/solar` → PVGIS 5.3 MRcalc → série mensal de irradiação.
-- Front-end → algoritmo de dimensionamento → análise elétrica preliminar → unifilar SVG.
+## APIs
 
-## Observação técnica
+- `/api/geocode` — Nominatim/OpenStreetMap, busca/reversa.
+- `/api/solar` — PVGIS 5.3 MRcalc.
+- `/api/nasa` — NASA POWER Climatology.
+- `/api/pvcalc` — PVGIS 5.3 PVcalc.
+- `/api/offgrid` — PVGIS 5.3 SHScalc.
 
-Esta versão é uma ferramenta de pré-dimensionamento. O projeto executivo deve considerar os dados exatos dos módulos, inversores, baterias, temperaturas de projeto, capacidade de condução de corrente, queda de tensão, curto-circuito, proteção, equipotencialização, aterramento, DPS/SPDA e requisitos da distribuidora, além das normas técnicas aplicáveis.
+## Convenção de azimute na interface
+
+A interface utiliza azimute de bússola:
+- 0° = Norte
+- 90° = Leste
+- 180° = Sul
+- 270° = Oeste
+
+Ao chamar o PVGIS, a aplicação converte automaticamente para a convenção da API PVGIS.
+
+## Segurança e responsabilidade técnica
+
+Os resultados de cabo e proteção são **pré-dimensionamentos**. A seleção executiva deve conferir capacidade de condução, método de instalação, temperatura, agrupamento, curto-circuito, seletividade, coordenação, DPS, aterramento, SPDA, documentação dos fabricantes e requisitos da distribuidora.
+
+Referências indicativas: ABNT NBR 16690, ABNT NBR 5410, ABNT NBR 5419, IEC 60364, ANEEL/PRODIST e INMETRO. Confirme sempre a edição vigente e os requisitos locais.
